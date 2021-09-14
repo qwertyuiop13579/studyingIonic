@@ -19,8 +19,12 @@ btnAdd.addEventListener('click', () => {
   const enteredReason = inputReason.value;
   const enteredAmount = inputAmount.value;
   if (enteredReason.trim().length <= 0 || enteredAmount.trim().length <= 0 || enteredAmount <= 0) {
-    console.log("Invalid");
-    return;
+    const alert = document.createElement('ion-alert');
+    alert.header = 'Invalid inputs';
+    alert.message = 'Please enter a valid reason and amount!';
+    alert.buttons = ['Ok'];
+    document.body.appendChild(alert);
+    return alert.present();
   }
 
   const newItem = document.createElement('ion-item');
@@ -33,14 +37,3 @@ btnAdd.addEventListener('click', () => {
 });
 
 btnClear.addEventListener('click', clearFunction);
-
-
-// async function handleButtonClick() {
-//   const alert = await alertController.create({
-//     header: 'Use this lightsaber?',
-//     message: 'Do you agree to use this lightsaber to do good across the galaxy?',
-//     buttons: ['Disagree', 'Agree']
-//   });
-
-//   await alert.present();
-// }
