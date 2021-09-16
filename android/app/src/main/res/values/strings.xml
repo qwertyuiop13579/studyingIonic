@@ -2,6 +2,6 @@
 <resources>
     <string name="app_name">studyingIonic</string>
     <string name="title_activity_main">studyingIonic</string>
-    <string name="package_name">com.studyingIonic.angular</string>
-    <string name="custom_url_scheme">com.studyingIonic.angular</string>
+    <string name="package_name">com.studyingionic.angular</string>
+    <string name="custom_url_scheme">com.studyingionic.angular</string>
 </resources>

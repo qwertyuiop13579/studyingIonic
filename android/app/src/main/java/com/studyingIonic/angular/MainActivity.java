@@ -1,4 +1,4 @@
-package com.studyingIonic.angular;
+package com.studyingionic.angular;
 
 import com.getcapacitor.BridgeActivity;
 
