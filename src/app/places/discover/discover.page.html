@@ -30,7 +30,7 @@
           <ion-item *ngFor="let place of places.slice(1)" [routerLink]="['/','places','tabs','discover',place.id]"
             detail>
             <ion-thumbnail slot="start">
-              <img [src]="place.imageURL">
+              <ion-img [src]="place.imageURL"></ion-img>
             </ion-thumbnail>
             <ion-label>
               <h2>{{place.title}}</h2>

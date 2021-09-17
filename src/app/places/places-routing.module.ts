@@ -29,7 +29,7 @@ const routes: Routes = [
             loadChildren: () => import('./offers/offers.module').then(m => m.OffersPageModule)
           },
           {
-            path: 'new-offer',
+            path: 'new',
             loadChildren: () => import('./offers/new-offer/new-offer.module').then(m => m.NewOfferPageModule)
           },
           {
