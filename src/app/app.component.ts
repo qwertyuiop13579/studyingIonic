@@ -11,7 +11,6 @@ export class AppComponent {
   constructor(private router: Router, private authService: AuthService) { }
 
   onLogout() {
-    console.log('Logout');
     this.authService.logout();
     this.router.navigate(['/auth']);
   }
