@@ -11,12 +11,12 @@ import { PlacesService } from '../places.service';
 export class DiscoverPage implements OnInit, OnDestroy {
 
   places: Place[] = [];
-  private placesSebscription: Subscription;
+  private placesSubscription: Subscription;
 
   constructor(private placesService: PlacesService) { }
 
   ngOnInit() {
-    this.placesSebscription = this.placesService.places.subscribe((placesArr) => {
+    this.placesSubscription = this.placesService.places.subscribe((placesArr) => {
       this.places = placesArr;
     });
   }
@@ -30,8 +30,8 @@ export class DiscoverPage implements OnInit, OnDestroy {
   }
 
   ngOnDestroy() {
-    if (this.placesSebscription) {
-      this.placesSebscription.unsubscribe();
+    if (this.placesSubscription) {
+      this.placesSubscription.unsubscribe();
     }
   }
 }

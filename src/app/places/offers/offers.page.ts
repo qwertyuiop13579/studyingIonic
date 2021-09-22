@@ -13,12 +13,12 @@ import { PlacesService } from '../places.service';
 })
 export class OffersPage implements OnInit, OnDestroy {
   offers: Place[];
-  private placesSebscription: Subscription;
+  private placesSubscription: Subscription;
 
   constructor(private placesService: PlacesService, private router: Router) { }
 
   ngOnInit() {
-    this.placesSebscription = this.placesService.places.subscribe((placesArr) => {
+    this.placesSubscription = this.placesService.places.subscribe((placesArr) => {
       this.offers = placesArr;
     });
   }
@@ -34,8 +34,8 @@ export class OffersPage implements OnInit, OnDestroy {
   }
 
   ngOnDestroy() {
-    if (this.placesSebscription) {
-      this.placesSebscription.unsubscribe();
+    if (this.placesSubscription) {
+      this.placesSubscription.unsubscribe();
     }
   }
 

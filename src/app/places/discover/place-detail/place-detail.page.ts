@@ -14,7 +14,7 @@ import { PlacesService } from '../../places.service';
 })
 export class PlaceDetailPage implements OnInit, OnDestroy {
   place: Place;
-  private placesSebscription: Subscription;
+  private placesSubscription: Subscription;
 
   constructor(private navCtrl: NavController,
     private route: ActivatedRoute,
@@ -29,7 +29,7 @@ export class PlaceDetailPage implements OnInit, OnDestroy {
         this.navCtrl.navigateBack('/places/tabs/discover');
         return;
       }
-      this.placesSebscription = this.placesService.getPlace(paramMap.get('placeId')).subscribe((place) => {
+      this.placesSubscription = this.placesService.getPlace(paramMap.get('placeId')).subscribe((place) => {
         this.place = place;
       });
       // this.place = this.placesService.getPlace(paramMap.get('placeId'));
@@ -87,8 +87,8 @@ export class PlaceDetailPage implements OnInit, OnDestroy {
   }
 
   ngOnDestroy() {
-    if (this.placesSebscription) {
-      this.placesSebscription.unsubscribe();
+    if (this.placesSubscription) {
+      this.placesSubscription.unsubscribe();
     }
   }
 

@@ -3,7 +3,7 @@
 /* eslint-disable no-underscore-dangle */
 import { Injectable } from '@angular/core';
 import { BehaviorSubject } from 'rxjs';
-import { take, map } from 'rxjs/operators';
+import { take, map, tap, delay } from 'rxjs/operators';
 
 import { AuthService } from '../auth/auth.service';
 import { Place } from './place.model';
@@ -35,8 +35,20 @@ export class PlacesService {
     const newPlace = new Place(Math.random.toString(), title, description,
       'https://www.pandotrip.com/wp-content/uploads/2018/06/Eiffel-Tower-Paris-France.jpg', price, dateFrom, dateTo,
       this.authService.userId);
-    this.places.pipe(take(1)).subscribe((placesArr) => {     //take only the last object from observable
+    return this.places.pipe(take(1), delay(1000), tap((placesArr) => {
       this._places.next(placesArr.concat(newPlace));
-    });
+    }));
   }
+
+  updatePlace(placeId: string, title: string, description: string) {
+    return this.places.pipe(take(1), delay(1000), tap(placesArr => {
+      const updatedPlaceIndex = placesArr.findIndex(pl => pl.id === placeId);
+      const updatedPlaces = [...placesArr];
+      const oldPlace = updatedPlaces[updatedPlaceIndex];
+      updatedPlaces[updatedPlaceIndex] = new Place(oldPlace.id, title, description, oldPlace.imageURL, oldPlace.price,
+        oldPlace.availableFrom, oldPlace.availableTo, oldPlace.userId);
+      this._places.next(updatedPlaces);
+    }));
+  }
+
 }

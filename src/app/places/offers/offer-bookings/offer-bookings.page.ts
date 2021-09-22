@@ -13,7 +13,7 @@ import { PlacesService } from '../../places.service';
 })
 export class OfferBookingsPage implements OnInit, OnDestroy {
   place: Place;
-  private placesSebscription: Subscription;
+  private placesSubscription: Subscription;
 
   constructor(private route: ActivatedRoute, private navCtrl: NavController, private placesService: PlacesService) { }
 
@@ -23,15 +23,15 @@ export class OfferBookingsPage implements OnInit, OnDestroy {
         this.navCtrl.navigateBack('/places/tabs/offers');
         return;
       }
-      this.placesSebscription = this.placesService.getPlace(paramMap.get('placeId')).subscribe((place) => {
+      this.placesSubscription = this.placesService.getPlace(paramMap.get('placeId')).subscribe((place) => {
         this.place = place;
       });
     });
   }
 
   ngOnDestroy() {
-    if (this.placesSebscription) {
-      this.placesSebscription.unsubscribe();
+    if (this.placesSubscription) {
+      this.placesSubscription.unsubscribe();
     }
   }
 }
