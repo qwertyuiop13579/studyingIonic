@@ -1,5 +1,9 @@
+/* eslint-disable arrow-body-style */
+/* eslint-disable @typescript-eslint/no-unused-expressions */
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { Subscription } from 'rxjs';
+import { AuthService } from '../../auth/auth.service';
+
 import { Place } from '../place.model';
 import { PlacesService } from '../places.service';
 
@@ -10,23 +14,28 @@ import { PlacesService } from '../places.service';
 })
 export class DiscoverPage implements OnInit, OnDestroy {
 
-  places: Place[] = [];
+  loadedPlaces: Place[];
+  relevantPlaces: Place[];
   private placesSubscription: Subscription;
 
-  constructor(private placesService: PlacesService) { }
+  constructor(private placesService: PlacesService, private authService: AuthService) { }
 
   ngOnInit() {
-    this.placesSubscription = this.placesService.places.subscribe((placesArr) => {
-      this.places = placesArr;
+    this.placesSubscription = this.placesService.places.subscribe(placesArr => {
+      this.loadedPlaces = [...placesArr];
+      this.relevantPlaces = [...placesArr];
     });
   }
 
-  // ionViewWillEnter() {
-  //   this.places = this.placesService.places;
-  // }
-
   onSegmentsChange(event: any) {
-    console.log(event.detail);
+    if (event.detail.value === 'all-places') {
+      this.relevantPlaces = [...this.loadedPlaces];
+    } else {
+
+      this.relevantPlaces = this.loadedPlaces.filter((place) => {
+        return place.userId !== this.authService.userId;
+      });
+    }
   }
 
   ngOnDestroy() {
