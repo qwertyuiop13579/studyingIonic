@@ -28,7 +28,7 @@ export class NewOfferPage implements OnInit {
     if (this.form.invalid) {
       return;
     }
-    this.placesService.appPlace(this.form.value.title, this.form.value.description, +this.form.value.price,
+    this.placesService.addPlace(this.form.value.title, this.form.value.description, +this.form.value.price,
       new Date(this.form.value.dateFrom), new Date(this.form.value.dateTo));
     this.form.reset();
     this.router.navigate(['/places/tabs/offers']);
