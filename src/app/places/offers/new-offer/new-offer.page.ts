@@ -23,6 +23,9 @@ export class NewOfferPage implements OnInit {
   }
 
   onCreateOffer() {
+    if (this.form.invalid) {
+      return;
+    }
     console.log(this.form);
   }
 
