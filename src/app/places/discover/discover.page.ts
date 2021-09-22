@@ -18,6 +18,10 @@ export class DiscoverPage implements OnInit {
     this.places = this.placesService.places;
   }
 
+  ionViewWillEnter() {
+    this.places = this.placesService.places;
+  }
+
   onSegmentsChange(event: any) {
     console.log(event.detail);
   }

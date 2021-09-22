@@ -17,11 +17,14 @@ export class OffersPage implements OnInit {
   ngOnInit() {
     this.offers = this.placesService.places;
   }
+  ionViewWillEnter() {
+    this.offers = this.placesService.places;
+  }
 
   onEdit(offerId: string, slidingItem: IonItemSliding) {
     slidingItem.close();
     this.router.navigate(['/', 'places', 'tabs', 'offers', 'edit', offerId]);
-    console.log('edit'+offerId);
+    console.log('edit ' + offerId);
   }
 
 }
