@@ -16,10 +16,6 @@ const routes: Routes = [
     path: 'edit-offer',
     loadChildren: () => import('./edit-offer/edit-offer.module').then( m => m.EditOfferPageModule)
   },
-  {
-    path: 'offer-bookings',
-    loadChildren: () => import('./offer-bookings/offer-bookings.module').then( m => m.OfferBookingsPageModule)
-  }
 ];
 
 @NgModule({
