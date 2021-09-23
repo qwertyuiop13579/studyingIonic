@@ -3,8 +3,8 @@
 /* eslint-disable no-underscore-dangle */
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { BehaviorSubject } from 'rxjs';
-import { take, map, tap, delay, switchMap } from 'rxjs/operators';
+import { BehaviorSubject, of } from 'rxjs';
+import { take, map, tap, switchMap } from 'rxjs/operators';
 
 import { AuthService } from '../auth/auth.service';
 import { Place } from './place.model';
@@ -58,10 +58,12 @@ export class PlacesService {
   }
 
   getPlace(id: string) {
-    return this.places.pipe(take(1), map(placesArr => {
-      return { ...placesArr.find(p => p.id === id) };
-    }));
-
+    return this.http.get<PlaceData>(`https://studyingionic-83d58-default-rtdb.firebaseio.com/places/${id}.json`).pipe(
+      map((resData) => {
+        return new Place(id, resData.title, resData.description, resData.imageURL, resData.price,
+          new Date(resData.availableFrom), new Date(resData.availableTo), resData.userId);
+      })
+    );
   }
 
   addPlace(title: string, description: string, price: number, dateFrom: Date, dateTo: Date) {
@@ -84,14 +86,25 @@ export class PlacesService {
   }
 
   updatePlace(placeId: string, title: string, description: string) {
-    return this.places.pipe(take(1), delay(1000), tap(placesArr => {
-      const updatedPlaceIndex = placesArr.findIndex(pl => pl.id === placeId);
-      const updatedPlaces = [...placesArr];
-      const oldPlace = updatedPlaces[updatedPlaceIndex];
-      updatedPlaces[updatedPlaceIndex] = new Place(oldPlace.id, title, description, oldPlace.imageURL, oldPlace.price,
-        oldPlace.availableFrom, oldPlace.availableTo, oldPlace.userId);
-      this.placesSubj.next(updatedPlaces);
-    }));
+    let updatedPlaces: Place[];
+    return this.places.pipe(
+      take(1),
+      switchMap((placesArr) => {
+        if (!placesArr || placesArr.length <= 0) {
+          return this.fetchPlaces();
+        }
+        else {
+          return of(placesArr);
+        }
+      }),
+      switchMap((placesArr) => {
+        const updatedPlaceIndex = placesArr.findIndex(pl => pl.id === placeId);
+        updatedPlaces = [...placesArr];
+        const oldPlace = updatedPlaces[updatedPlaceIndex];
+        updatedPlaces[updatedPlaceIndex] = new Place(oldPlace.id, title, description, oldPlace.imageURL, oldPlace.price, oldPlace.availableFrom, oldPlace.availableTo, oldPlace.userId);
+        return this.http.put(`https://studyingionic-83d58-default-rtdb.firebaseio.com/places/${placeId}.json`, { ...updatedPlaces[updatedPlaceIndex], id: null });
+      }),
+      tap(() => { this.placesSubj.next(updatedPlaces); }));
   }
 
 }

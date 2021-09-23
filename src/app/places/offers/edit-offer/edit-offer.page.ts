@@ -15,6 +15,8 @@ import { PlacesService } from '../../places.service';
 export class EditOfferPage implements OnInit, OnDestroy {
   place: Place;
   form: FormGroup;
+  isLoading = false;
+  placeId: string;
   private placesSubscription: Subscription;
 
   constructor(private route: ActivatedRoute, private placesService: PlacesService, private navCtrl: NavController,
@@ -26,13 +28,16 @@ export class EditOfferPage implements OnInit, OnDestroy {
         this.navCtrl.navigateBack('/places/tabs/offers');
         return;
       }
-      this.placesSubscription = this.placesService.getPlace(paramMap.get('placeId')).subscribe((place) => {
+      this.placeId = paramMap.get('placeId');
+      this.isLoading = true;
+      this.placesSubscription = this.placesService.getPlace(this.placeId).subscribe((place) => {
         this.place = place;
 
         this.form = new FormGroup({
           title: new FormControl(this.place.title, { validators: [Validators.required] }),
           description: new FormControl(this.place.description, { validators: [Validators.required, Validators.maxLength(180)] }),
         });
+        this.isLoading = false;
       });
     });
   }
