@@ -18,11 +18,11 @@ export class LocationPickerComponent implements OnInit {
       component: MapModalComponent,
     })
       .then(modalEl => {
+        modalEl.onDidDismiss().then(modalData => {
+          console.log(modalData.data);
+        });
         modalEl.present();
-        return modalEl.onDidDismiss();
       })
       .then(resultData => { });
-
   }
-
 }
