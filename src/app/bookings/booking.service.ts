@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-expressions */
 /* eslint-disable no-underscore-dangle */
 import { Injectable } from '@angular/core';
 import { BehaviorSubject } from 'rxjs';
@@ -27,6 +28,10 @@ export class BookingsService {
   }
 
   cancelBooking(bookingId: string) {
-
+    return this.bookings.pipe(take(1), delay(1000), tap((bookingsArr) => {
+      this.bookingsSubj.next(bookingsArr.filter(book => {
+        book.id !== bookingId;
+      }));
+    }));
   }
 }

@@ -3,6 +3,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { ActionSheetController, LoadingController, ModalController, NavController } from '@ionic/angular';
 import { Subscription } from 'rxjs';
 
+import { AuthService } from '../../../auth/auth.service';
 import { BookingsService } from '../../../bookings/booking.service';
 import { CreateBookingComponent } from '../../../bookings/create-booking/create-booking.component';
 import { Place } from '../../place.model';
@@ -15,15 +16,18 @@ import { PlacesService } from '../../places.service';
 })
 export class PlaceDetailPage implements OnInit, OnDestroy {
   place: Place;
+  isBookable = false;
   private placesSubscription: Subscription;
 
   constructor(private navCtrl: NavController,
     private route: ActivatedRoute,
+    private router: Router,
     private placesService: PlacesService,
     private modalCtrl: ModalController,
     private actionSheetCtrl: ActionSheetController,
     private bookingService: BookingsService,
     private loadingCtrl: LoadingController,
+    private authService: AuthService,
   ) { }
 
   ngOnInit() {
@@ -34,6 +38,7 @@ export class PlaceDetailPage implements OnInit, OnDestroy {
       }
       this.placesSubscription = this.placesService.getPlace(paramMap.get('placeId')).subscribe((place) => {
         this.place = place;
+        this.isBookable = place.userId !== this.authService.userId;
       });
       // this.place = this.placesService.getPlace(paramMap.get('placeId'));
     });
@@ -90,6 +95,7 @@ export class PlaceDetailPage implements OnInit, OnDestroy {
               data.firstName, data.lastName, data.guestsNumber, data.dateFrom,
               data.dateTo).subscribe(() => {
                 loadindEl.dismiss();
+                this.router.navigate(['/places/tabs/discover']);
               });
           });
         }
