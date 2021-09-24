@@ -131,29 +131,7 @@ export class PlaceDetailPage implements OnInit, OnDestroy {
     })
       .then(modalEl => {
         modalEl.present();
-        // modalEl.onDidDismiss().then(modalData => {
-        //   if (!modalData.data) {
-        //     return;
-        //   }
-        //   const pickedLocation: PlaceLocation = {
-        //     lat: modalData.data.lat,
-        //     lng: modalData.data.lng,
-        //     address: null,
-        //     staticMapImageURL: null,
-        //   };
-        //   this.isLoading = true;
-        //   this.getAddress(modalData.data.lat, modalData.data.lng).pipe(switchMap((address) => {
-        //     pickedLocation.address = address;
-        //     return of(this.getMapImage(pickedLocation.lat, pickedLocation.lng, 14));
-        //   })).subscribe((staticMapImageURL) => {
-        //     pickedLocation.staticMapImageURL = staticMapImageURL;
-        //     this.selectedLocationImage = staticMapImageURL;
-        //     this.isLoading = false;
-        //     this.locationPicked.emit(pickedLocation);
-        //   });
-        // });
-      })
-      .then(resultData => { });
+      });
   }
 
   ngOnDestroy() {
