@@ -59,7 +59,7 @@ export class NewOfferPage implements OnInit {
     this.form.patchValue({ location: location });
   }
 
-  onImagePicked(imageData: string | File) {
+  onImagePicked(imageData: string | File) {           //error
     let imageFile;
     if (typeof imageData === 'string') {
       try {
@@ -72,6 +72,7 @@ export class NewOfferPage implements OnInit {
     else {
       imageFile = imageData;
     }
+    console.log(imageFile);
     this.form.patchValue({ image: imageFile });
   }
 

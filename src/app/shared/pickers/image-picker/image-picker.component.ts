@@ -1,4 +1,4 @@
-import { Component, ElementRef, EventEmitter, OnInit, Output, ViewChild } from '@angular/core';
+import { Component, ElementRef, EventEmitter, Input, OnInit, Output, ViewChild } from '@angular/core';
 import { Camera, CameraResultType, CameraSource } from '@capacitor/camera';
 import { Capacitor } from '@capacitor/core';
 import { Platform } from '@ionic/angular';
@@ -11,43 +11,44 @@ import { Platform } from '@ionic/angular';
 export class ImagePickerComponent implements OnInit {
   @ViewChild('filepicker') filePickerRef: ElementRef<HTMLInputElement>;
   @Output() imagePick = new EventEmitter<string | File>();
+  @Input() showPreview = false;
   selectedImage: string;
   canUsePicker = false;
 
   constructor(private platform: Platform) { }
 
   ngOnInit() {
-    console.log('Mobile: ' + this.platform.is('mobile'));
-    console.log('Hybrid: ' + this.platform.is('hybrid'));
-    console.log('Ios: ' + this.platform.is('ios'));
-    console.log('Android: ' + this.platform.is('android'));
-    console.log('Desktop: ' + this.platform.is('desktop'));
+    // console.log('Mobile: ' + this.platform.is('mobile'));
+    // console.log('Hybrid: ' + this.platform.is('hybrid'));
+    // console.log('Ios: ' + this.platform.is('ios'));
+    // console.log('Android: ' + this.platform.is('android'));
+    // console.log('Desktop: ' + this.platform.is('desktop'));
     if ((this.platform.is('mobile') && !this.platform.is('hybrid')) || (this.platform.is('desktop'))) {
       this.canUsePicker = true;
     }
   }
 
   async onPickImage() {
-    if (!Capacitor.isPluginAvailable('Camera') || this.canUsePicker) {
-      console.log('Camera is not available.');
+    if (!Capacitor.isPluginAvailable('Camera')) {
       this.filePickerRef.nativeElement.click();
       return;
     }
-    console.log('Camera is available.');
     Camera.getPhoto({
       quality: 50,
-      source: CameraSource.Prompt,
+      source: CameraSource.Camera,
       correctOrientation: true,
       height: 320,
       width: 200,
       resultType: CameraResultType.DataUrl
     }).then(image => {
-      console.log('Image is available.');
       this.selectedImage = image.dataUrl;
-      this.imagePick.emit(image.dataUrl);
-      console.log(image);
+      this.imagePick.emit(image.dataUrl);           //error
     }).catch((error) => {
+      if (this.canUsePicker) {
+        this.filePickerRef.nativeElement.click();          //open filePicker if cancel camera
+      }
       console.log(error);
+      return false;
     });
   }
 
