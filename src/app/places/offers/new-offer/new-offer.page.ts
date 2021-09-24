@@ -33,6 +33,10 @@ export class NewOfferPage implements OnInit {
     this.form.patchValue({ location: location });
   }
 
+  onImagePicked(imageData: string){
+    console.log(imageData);
+  }
+
   onCreateOffer() {
     if (this.form.invalid) {
       return;
