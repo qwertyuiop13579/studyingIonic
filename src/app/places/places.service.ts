@@ -7,6 +7,7 @@ import { BehaviorSubject, of } from 'rxjs';
 import { take, map, tap, switchMap } from 'rxjs/operators';
 
 import { AuthService } from '../auth/auth.service';
+import { PlaceLocation } from './location.model';
 import { Place } from './place.model';
 
 
@@ -22,6 +23,7 @@ interface PlaceData {
   price: number;
   title: string;
   userId: string;
+  location: PlaceLocation;
 }
 
 @Injectable({
@@ -45,7 +47,7 @@ export class PlacesService {
             if (resData.hasOwnProperty(key)) {
               const resDataByKey = resData[key];
               placesArr.push(new Place(key, resDataByKey.title, resDataByKey.description, resDataByKey.imageURL, resDataByKey.price,
-                new Date(resDataByKey.availableFrom), new Date(resDataByKey.availableTo), resDataByKey.userId));
+                new Date(resDataByKey.availableFrom), new Date(resDataByKey.availableTo), resDataByKey.userId, resDataByKey.location));
             }
           }
           return placesArr;
@@ -61,15 +63,15 @@ export class PlacesService {
     return this.http.get<PlaceData>(`https://studyingionic-83d58-default-rtdb.firebaseio.com/places/${id}.json`).pipe(
       map((resData) => {
         return new Place(id, resData.title, resData.description, resData.imageURL, resData.price,
-          new Date(resData.availableFrom), new Date(resData.availableTo), resData.userId);
+          new Date(resData.availableFrom), new Date(resData.availableTo), resData.userId, resData.location);
       })
     );
   }
 
-  addPlace(title: string, description: string, price: number, dateFrom: Date, dateTo: Date) {
+  addPlace(title: string, description: string, price: number, dateFrom: Date, dateTo: Date, location: PlaceLocation) {
     const newPlace = new Place(Math.random.toString(), title, description,
       'https://www.pandotrip.com/wp-content/uploads/2018/06/Eiffel-Tower-Paris-France.jpg', price, dateFrom, dateTo,
-      this.authService.userId);
+      this.authService.userId, location);
     let generatedId: string;
     return this.http.post<{ name: string }>('https://studyingionic-83d58-default-rtdb.firebaseio.com/places.json', { ...newPlace, id: null })
       .pipe(
@@ -101,7 +103,7 @@ export class PlacesService {
         const updatedPlaceIndex = placesArr.findIndex(pl => pl.id === placeId);
         updatedPlaces = [...placesArr];
         const oldPlace = updatedPlaces[updatedPlaceIndex];
-        updatedPlaces[updatedPlaceIndex] = new Place(oldPlace.id, title, description, oldPlace.imageURL, oldPlace.price, oldPlace.availableFrom, oldPlace.availableTo, oldPlace.userId);
+        updatedPlaces[updatedPlaceIndex] = new Place(oldPlace.id, title, description, oldPlace.imageURL, oldPlace.price, oldPlace.availableFrom, oldPlace.availableTo, oldPlace.userId, oldPlace.location);
         return this.http.put(`https://studyingionic-83d58-default-rtdb.firebaseio.com/places/${placeId}.json`, { ...updatedPlaces[updatedPlaceIndex], id: null });
       }),
       tap(() => { this.placesSubj.next(updatedPlaces); }));
