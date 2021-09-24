@@ -8,6 +8,7 @@ import { BookingsService } from '../../../bookings/booking.service';
 import { CreateBookingComponent } from '../../../bookings/create-booking/create-booking.component';
 import { Place } from '../../place.model';
 import { PlacesService } from '../../places.service';
+import { MapModalComponent } from '../../../shared/map-modal/map-modal.component';
 
 @Component({
   selector: 'app-place-detail',
@@ -116,6 +117,43 @@ export class PlaceDetailPage implements OnInit, OnDestroy {
           });
         }
       });
+  }
+
+  onShowFullMap() {
+    this.modalCtrl.create({
+      component: MapModalComponent,
+      componentProps: {
+        center: { lat: this.place.location.lat, lng: this.place.location.lng },
+        selectable: false,
+        closeButtonText: 'Close',
+        title: this.place.location.address,
+      }
+    })
+      .then(modalEl => {
+        modalEl.present();
+        // modalEl.onDidDismiss().then(modalData => {
+        //   if (!modalData.data) {
+        //     return;
+        //   }
+        //   const pickedLocation: PlaceLocation = {
+        //     lat: modalData.data.lat,
+        //     lng: modalData.data.lng,
+        //     address: null,
+        //     staticMapImageURL: null,
+        //   };
+        //   this.isLoading = true;
+        //   this.getAddress(modalData.data.lat, modalData.data.lng).pipe(switchMap((address) => {
+        //     pickedLocation.address = address;
+        //     return of(this.getMapImage(pickedLocation.lat, pickedLocation.lng, 14));
+        //   })).subscribe((staticMapImageURL) => {
+        //     pickedLocation.staticMapImageURL = staticMapImageURL;
+        //     this.selectedLocationImage = staticMapImageURL;
+        //     this.isLoading = false;
+        //     this.locationPicked.emit(pickedLocation);
+        //   });
+        // });
+      })
+      .then(resultData => { });
   }
 
   ngOnDestroy() {
