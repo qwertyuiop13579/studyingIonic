@@ -4,7 +4,7 @@
 /* eslint-disable object-shorthand */
 /* eslint-disable no-underscore-dangle */
 import { HttpClient } from '@angular/common/http';
-import { Injectable } from '@angular/core';
+import { Injectable, OnDestroy } from '@angular/core';
 import { BehaviorSubject, from } from 'rxjs';
 import { map, tap } from 'rxjs/operators';
 import { Storage } from '@capacitor/storage';
@@ -26,8 +26,9 @@ export interface AuthResponseData {
 @Injectable({
   providedIn: 'root'
 })
-export class AuthService {
+export class AuthService implements OnDestroy {
   private userSubj = new BehaviorSubject<User>(null);
+  private activeTimeout: any;
 
   constructor(private http: HttpClient) { }
 
@@ -53,6 +54,17 @@ export class AuthService {
     }));
   }
 
+  get token() {
+    return this.userSubj.asObservable().pipe(map((user) => {
+      if (user) {
+        return user.token;
+      }
+      else {
+        return null;
+      }
+    }));
+  }
+
   signup(email: string, password: string) {
     return this.http.post<AuthResponseData>(`https://identitytoolkit.googleapis.com/v1/accounts:signUp?key=${environment.firebaseAPIKey}`,
       { email: email, password: password, returnSecureToken: true }).pipe(tap(this.setUserData.bind(this)));
@@ -65,6 +77,10 @@ export class AuthService {
   }
 
   logout() {
+    if (this.activeTimeout) {
+      clearTimeout(this.activeTimeout);
+    }
+    Storage.remove({ key: 'authData' });
     this.userSubj.next(null);
   }
 
@@ -84,6 +100,7 @@ export class AuthService {
       tap((user) => {
         if (user) {
           this.userSubj.next(user);
+          this.autoLogout(user.tokenDuration);
         }
       }),
       map((user) => {
@@ -91,9 +108,26 @@ export class AuthService {
       }));
   }
 
+  ngOnDestroy() {
+    if (this.activeTimeout) {
+      clearTimeout(this.activeTimeout);
+    }
+  }
+
+  private autoLogout(duration: number) {
+    if (this.activeTimeout) {
+      clearTimeout(this.activeTimeout);
+    }
+    this.activeTimeout = setTimeout(() => {
+      this.logout();
+    }, duration);
+  }
+
   private setUserData(userData: AuthResponseData) {
     const expirationTime = new Date(new Date().getTime() + +userData.expiresIn * 1000);
-    this.userSubj.next(new User(userData.localId, userData.email, userData.idToken, expirationTime));
+    const newUser = new User(userData.localId, userData.email, userData.idToken, expirationTime);
+    this.userSubj.next(newUser);
+    this.autoLogout(newUser.tokenDuration);
     this.storeAuthData(userData.localId, userData.idToken, expirationTime.toISOString(), userData.email);
   }
 

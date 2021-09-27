@@ -9,7 +9,7 @@ import { CreateBookingComponent } from '../../../bookings/create-booking/create-
 import { Place } from '../../place.model';
 import { PlacesService } from '../../places.service';
 import { MapModalComponent } from '../../../shared/map-modal/map-modal.component';
-import { switchMap } from 'rxjs/operators';
+import { switchMap, take } from 'rxjs/operators';
 
 @Component({
   selector: 'app-place-detail',
@@ -42,32 +42,33 @@ export class PlaceDetailPage implements OnInit, OnDestroy {
       }
       this.isLoading = true;
       let currentUserId: string;
-      this.authService.userId.pipe(switchMap((userId) => {
-        if (!userId) {
-          throw new Error('Cannot find user id.');
-        }
-        else {
-          currentUserId = userId;
-          return this.placesService.getPlace(paramMap.get('placeId'));
-        }
-      })).subscribe((place) => {
-        this.place = place;
-        this.isBookable = place.userId !== currentUserId;
-        this.isLoading = false;
-      }, (error) => {
-        this.alertCtrl.create({
-          header: 'An error occured!',
-          message: 'Place could not be fetched. Please try again later.',
-          buttons:
-            [{
-              text: 'Okay', handler: () => {
-                this.router.navigate(['/places/tabs//discover']);
-              }
-            }]
-        }).then((alertEl => {
-          alertEl.present();
-        }));
-      });
+      this.authService.userId.pipe(take(1),
+        switchMap((userId) => {
+          if (!userId) {
+            throw new Error('Cannot find user id.');
+          }
+          else {
+            currentUserId = userId;
+            return this.placesService.getPlace(paramMap.get('placeId'));
+          }
+        })).subscribe((place) => {
+          this.place = place;
+          this.isBookable = place.userId !== currentUserId;
+          this.isLoading = false;
+        }, (error) => {
+          this.alertCtrl.create({
+            header: 'An error occured!',
+            message: 'Place could not be fetched. Please try again later.',
+            buttons:
+              [{
+                text: 'Okay', handler: () => {
+                  this.router.navigate(['/places/tabs//discover']);
+                }
+              }]
+          }).then((alertEl => {
+            alertEl.present();
+          }));
+        });
     });
 
   }
