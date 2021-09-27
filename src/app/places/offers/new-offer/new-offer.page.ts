@@ -1,9 +1,11 @@
+/* eslint-disable arrow-body-style */
 /* eslint-disable prefer-arrow/prefer-arrow-functions */
 /* eslint-disable object-shorthand */
 import { Component, OnInit } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { LoadingController } from '@ionic/angular';
+import { switchMap } from 'rxjs/operators';
 
 import { PlaceLocation } from '../../location.model';
 import { PlacesService } from '../../places.service';
@@ -85,12 +87,14 @@ export class NewOfferPage implements OnInit {
       message: 'Creating new place...'
     }).then(loadingEl => {
       loadingEl.present();
-      this.placesService.addPlace(this.form.value.title, this.form.value.description, +this.form.value.price,
-        new Date(this.form.value.dateFrom), new Date(this.form.value.dateTo), this.form.value.location).subscribe(() => {
-          loadingEl.dismiss();
-          this.form.reset();
-          this.router.navigate(['/places/tabs/offers']);
-        });
+      this.placesService.uploadImage(this.form.get('image').value).pipe(switchMap((uploadRes) => {
+        return this.placesService.addPlace(this.form.value.title, this.form.value.description, +this.form.value.price,
+          new Date(this.form.value.dateFrom), new Date(this.form.value.dateTo), this.form.value.location, uploadRes.imageURL);
+      })).subscribe(() => {
+        loadingEl.dismiss();
+        this.form.reset();
+        this.router.navigate(['/places/tabs/offers']);
+      });
     });
   }
 }

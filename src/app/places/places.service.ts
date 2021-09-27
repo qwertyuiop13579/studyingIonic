@@ -68,9 +68,15 @@ export class PlacesService {
     );
   }
 
-  addPlace(title: string, description: string, price: number, dateFrom: Date, dateTo: Date, location: PlaceLocation) {
-    const newPlace = new Place(Math.random.toString(), title, description,
-      'https://www.pandotrip.com/wp-content/uploads/2018/06/Eiffel-Tower-Paris-France.jpg', price, dateFrom, dateTo,
+  uploadImage(image: File) {
+    const uploadData = new FormData();
+    uploadData.append('image', image);
+    return this.http.post<{ imageURL: string; imagePath: string }>('URL_TO_CLOUD_TO_UPLOAD_IMAGE', uploadData);               //URL of cloud functions to upload image
+
+  }
+
+  addPlace(title: string, description: string, price: number, dateFrom: Date, dateTo: Date, location: PlaceLocation, imageURL: string) {
+    const newPlace = new Place(Math.random.toString(), title, description, imageURL, price, dateFrom, dateTo,
       this.authService.userId, location);
     let generatedId: string;
     return this.http.post<{ name: string }>('https://studyingionic-83d58-default-rtdb.firebaseio.com/places.json', { ...newPlace, id: null })
