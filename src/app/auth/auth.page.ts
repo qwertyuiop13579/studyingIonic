@@ -1,7 +1,9 @@
+/* eslint-disable max-len */
+/* eslint-disable object-shorthand */
 import { Component, OnInit } from '@angular/core';
 import { NgForm } from '@angular/forms';
 import { Router } from '@angular/router';
-import { LoadingController } from '@ionic/angular';
+import { AlertController, LoadingController } from '@ionic/angular';
 
 import { AuthService } from './auth.service';
 
@@ -14,23 +16,37 @@ export class AuthPage implements OnInit {
   isLoading = false;
   isLoginMode = true;
 
-  constructor(private authService: AuthService, private router: Router, private loadingCtrl: LoadingController) { }
+  constructor(private authService: AuthService, private router: Router, private loadingCtrl: LoadingController,
+    private alertCtrl: AlertController) { }
 
   ngOnInit() {
   }
 
-  onLogin() {
+  authenticate(email: string, password: string) {
     this.isLoading = true;
     this.authService.login();
     this.loadingCtrl.create({
       keyboardClose: true, message: 'Logging in...'
     }).then(loadingEl => {
       loadingEl.present();
-      setTimeout(() => {
+      console.log('signup');
+      this.authService.signup(email, password).subscribe((resData) => {
+        console.log(resData);
         this.isLoading = false;
         loadingEl.dismiss();
         this.router.navigate(['/places/tabs/discover']);
-      }, 1000);
+      }, (errorRes) => {
+        this.isLoading = false;
+        loadingEl.dismiss();
+        const code = errorRes.error.error.message;
+        let message = 'Could not sign you up, please try again later.';
+        switch (code) {
+          case 'EMAIL_EXISTS': message = 'The email address is already in use by another account.'; break;
+          case 'OPERATION_NOT_ALLOWED': message = 'Password sign-in is disabled for this project'; break;
+          case 'OO_MANY_ATTEMPTS_TRY_LATER': message = 'We have blocked all requests from this device due to unusual activity. Try again later'; break;
+        }
+        this.showAlert(message);
+      });
     });
   }
 
@@ -41,16 +57,16 @@ export class AuthPage implements OnInit {
     const email = form.value.email;
     const password = form.value.password;
 
-    if (this.isLoginMode) {
-      //send request to login
-      console.log('login');
-    } else {
-      console.log('signup');
-      //send request to signup
-    }
+    this.authenticate(email, password);
   }
 
   onSwitchMode() {
     this.isLoginMode = !this.isLoginMode;
+  }
+
+  private showAlert(message: string) {
+    this.alertCtrl.create({ message: message, header: 'Error occured!', buttons: ['Ok'] }).then((alertEl) => {
+      alertEl.present();
+    });
   }
 }

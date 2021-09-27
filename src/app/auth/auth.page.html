@@ -32,7 +32,7 @@
           <div class="ion-text-center">
             <ion-button type="button" color="primary" fill="clear" expand="block" (click)="onSwitchMode()">Switch to
               {{isLoginMode?'Signup':'Login'}}</ion-button>
-            <ion-button type="submit" color="primary" (click)="onLogin()" expand="block" [disabled]="f.invalid">
+            <ion-button type="submit" color="primary" expand="block" [disabled]="f.invalid">
               {{isLoginMode?'Login':'Signup'}}
             </ion-button>
             <!-- <ion-spinner *ngIf="isLoading" name="crescent" color="primary"></ion-spinner> -->
