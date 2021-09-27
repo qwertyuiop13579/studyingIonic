@@ -38,10 +38,9 @@ export class BookingsService {
   addBooking(placeId: string, placeTitle: string, placeImage: string, firstName: string, lastName: string, guestsNumber: number, dateFrom: Date, dateTo: Date) {
     let generatedId: string;
     let newBooking: Booking;
-    this.authService.userId.pipe(take(1), switchMap((userId) => {
+    return this.authService.userId.pipe(take(1), switchMap((userId) => {
       if (!userId) {
         throw new Error('No user id found.');
-        return;
       }
       else {
         newBooking = new Booking(Math.random().toString(), placeId, userId, placeTitle, placeImage, firstName, lastName, guestsNumber, dateFrom, dateTo);
@@ -72,21 +71,25 @@ export class BookingsService {
   }
 
   fetchBookings() {
-    return this.http.get<{ [key: string]: BookingData }>(`https://studyingionic-83d58-default-rtdb.firebaseio.com/bookings.json?orderBy="userId"&equalTo="${this.authService.userId}"`)
-      .pipe(
-        map((resData) => {
-          const bookings: Booking[] = [];
-          for (const key in resData) {
-            if (resData.hasOwnProperty(key)) {
-              const resDataByKey = resData[key];
-              bookings.push(new Booking(key, resDataByKey.placeId, resDataByKey.userId, resDataByKey.placeTitle, resDataByKey.placeImage,
-                resDataByKey.firstName, resDataByKey.lastName, resDataByKey.guestNumber, new Date(resDataByKey.dateFrom), new Date(resDataByKey.dateTo)));
-            }
+    return this.authService.userId.pipe(switchMap((userId) => {
+      if (!userId) {
+        throw new Error('Caanot find user id.');
+      }
+      return this.http.get<{ [key: string]: BookingData }>(`https://studyingionic-83d58-default-rtdb.firebaseio.com/bookings.json?orderBy="userId"&equalTo="${userId}"`);
+    }),
+      map((resData) => {
+        const bookings: Booking[] = [];
+        for (const key in resData) {
+          if (resData.hasOwnProperty(key)) {
+            const resDataByKey = resData[key];
+            bookings.push(new Booking(key, resDataByKey.placeId, resDataByKey.userId, resDataByKey.placeTitle, resDataByKey.placeImage,
+              resDataByKey.firstName, resDataByKey.lastName, resDataByKey.guestNumber, new Date(resDataByKey.dateFrom), new Date(resDataByKey.dateTo)));
           }
-          return bookings;
-        }),
-        tap(bookArr => {
-          this.bookingsSubj.next(bookArr);
-        }));
+        }
+        return bookings;
+      }),
+      tap(bookArr => {
+        this.bookingsSubj.next(bookArr);
+      }));
   }
 }

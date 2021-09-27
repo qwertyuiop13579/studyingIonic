@@ -3,8 +3,8 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { Subscription } from 'rxjs';
 import { take } from 'rxjs/operators';
-import { AuthService } from '../../auth/auth.service';
 
+import { AuthService } from '../../auth/auth.service';
 import { Place } from '../place.model';
 import { PlacesService } from '../places.service';
 

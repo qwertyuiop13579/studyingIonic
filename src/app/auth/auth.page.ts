@@ -39,7 +39,7 @@ export class AuthPage implements OnInit {
         authObs = this.authService.signup(email, password);
       }
       authObs.subscribe((resData) => {
-        console.log(resData);
+        //console.log(resData);
         this.isLoading = false;
         loadingEl.dismiss();
         this.router.navigate(['/places/tabs/discover']);

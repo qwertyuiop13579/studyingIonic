@@ -87,14 +87,23 @@ export class NewOfferPage implements OnInit {
       message: 'Creating new place...'
     }).then(loadingEl => {
       loadingEl.present();
-      this.placesService.uploadImage(this.form.get('image').value).pipe(switchMap((uploadRes) => {
-        return this.placesService.addPlace(this.form.value.title, this.form.value.description, +this.form.value.price,
-          new Date(this.form.value.dateFrom), new Date(this.form.value.dateTo), this.form.value.location, uploadRes.imageURL);
-      })).subscribe(() => {
-        loadingEl.dismiss();
-        this.form.reset();
-        this.router.navigate(['/places/tabs/offers']);
-      });
+      // this.placesService.uploadImage(this.form.get('image').value).pipe(switchMap((uploadRes) => {
+      //   return this.placesService.addPlace(this.form.value.title, this.form.value.description, +this.form.value.price,
+      //     new Date(this.form.value.dateFrom), new Date(this.form.value.dateTo), this.form.value.location, uploadRes.imageURL);
+      //     // Error with uploadRes.imageURL
+      // }))
+      this.placesService.addPlace(this.form.value.title, this.form.value.description, +this.form.value.price,
+        new Date(this.form.value.dateFrom), new Date(this.form.value.dateTo), this.form.value.location, this.form.get('image').value)
+        .subscribe(() => {
+          loadingEl.dismiss();
+          this.form.reset();
+          this.router.navigate(['/places/tabs/offers']);
+        }, (error) => {
+          console.log(error);
+          loadingEl.dismiss();
+          this.form.reset();
+          this.router.navigate(['/places/tabs/offers']);
+        });
     });
   }
 }

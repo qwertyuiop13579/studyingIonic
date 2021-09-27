@@ -9,6 +9,7 @@ import { CreateBookingComponent } from '../../../bookings/create-booking/create-
 import { Place } from '../../place.model';
 import { PlacesService } from '../../places.service';
 import { MapModalComponent } from '../../../shared/map-modal/map-modal.component';
+import { switchMap } from 'rxjs/operators';
 
 @Component({
   selector: 'app-place-detail',
@@ -40,9 +41,18 @@ export class PlaceDetailPage implements OnInit, OnDestroy {
         return;
       }
       this.isLoading = true;
-      this.placesSubscription = this.placesService.getPlace(paramMap.get('placeId')).subscribe((place) => {
+      let currentUserId: string;
+      this.authService.userId.pipe(switchMap((userId) => {
+        if (!userId) {
+          throw new Error('Cannot find user id.');
+        }
+        else {
+          currentUserId = userId;
+          return this.placesService.getPlace(paramMap.get('placeId'));
+        }
+      })).subscribe((place) => {
         this.place = place;
-        this.isBookable = place.userId !== this.authService.userId;
+        this.isBookable = place.userId !== currentUserId;
         this.isLoading = false;
       }, (error) => {
         this.alertCtrl.create({

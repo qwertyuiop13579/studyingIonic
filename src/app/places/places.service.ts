@@ -76,21 +76,29 @@ export class PlacesService {
   }
 
   addPlace(title: string, description: string, price: number, dateFrom: Date, dateTo: Date, location: PlaceLocation, imageURL: string) {
-    const newPlace = new Place(Math.random.toString(), title, description, imageURL, price, dateFrom, dateTo,
-      this.authService.userId, location);
+    let newPlace: Place;
     let generatedId: string;
-    return this.http.post<{ name: string }>('https://studyingionic-83d58-default-rtdb.firebaseio.com/places.json', { ...newPlace, id: null })
-      .pipe(
-        switchMap((resData) => {
-          generatedId = resData.name;
-          return this.places;
-        }),
-        take(1),
-        tap((placesArr) => {
-          newPlace.id = generatedId;
-          this.placesSubj.next(placesArr.concat(newPlace));
-        })
-      );
+    return this.authService.userId.pipe(take(1), switchMap((userId) => {
+      if (!userId) {
+        throw new Error('No user id found.');
+      }
+      else {
+
+        //newPlace = new Place(Math.random.toString(), title, description, imageURL, price, dateFrom, dateTo, userId, location);
+        newPlace = new Place(Math.random.toString(), title, description, 'https://www.pandotrip.com/wp-content/uploads/2018/06/Eiffel-Tower-Paris-France.jpg', price, dateFrom, dateTo, userId, location);
+      }
+      return this.http.post<{ name: string }>('https://studyingionic-83d58-default-rtdb.firebaseio.com/places.json', { ...newPlace, id: null });
+
+    }), switchMap((resData) => {
+      generatedId = resData.name;
+      return this.places;
+    }),
+      take(1),
+      tap((placesArr) => {
+        newPlace.id = generatedId;
+        this.placesSubj.next(placesArr.concat(newPlace));
+      })
+    );
   }
 
   updatePlace(placeId: string, title: string, description: string) {
