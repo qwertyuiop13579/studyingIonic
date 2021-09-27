@@ -1,13 +1,17 @@
+/* eslint-disable arrow-body-style */
 /* eslint-disable @typescript-eslint/no-unused-expressions */
 /* eslint-disable max-len */
 /* eslint-disable object-shorthand */
 /* eslint-disable no-underscore-dangle */
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { BehaviorSubject } from 'rxjs';
+import { BehaviorSubject, from } from 'rxjs';
+import { map, tap } from 'rxjs/operators';
+import { Storage } from '@capacitor/storage';
+
 import { environment } from '../../environments/environment';
 import { User } from './user.model';
-import { map, tap } from 'rxjs/operators';
+
 
 export interface AuthResponseData {
   idToken: string;
@@ -64,8 +68,38 @@ export class AuthService {
     this.userSubj.next(null);
   }
 
+  autoLogin() {
+    return from(Storage.get({ key: 'authData' })).pipe(map((authData) => {
+      if (!authData || !authData.value) {
+        return null;
+      }
+      const data = JSON.parse(authData.value) as { userId: string; token: string; tokenExpirationDate: string; email: string };
+      const expirationTime = new Date(data.tokenExpirationDate);
+      if (expirationTime <= new Date()) {
+        return null;
+      }
+      const user = new User(data.userId, data.email, data.token, expirationTime);
+      return user;
+    }),
+      tap((user) => {
+        if (user) {
+          this.userSubj.next(user);
+        }
+      }),
+      map((user) => {
+        return !!user;
+      }));
+  }
+
   private setUserData(userData: AuthResponseData) {
     const expirationTime = new Date(new Date().getTime() + +userData.expiresIn * 1000);
     this.userSubj.next(new User(userData.localId, userData.email, userData.idToken, expirationTime));
+    this.storeAuthData(userData.localId, userData.idToken, expirationTime.toISOString(), userData.email);
+  }
+
+  private storeAuthData(userId: string, token: string, tokenExpirationDate: string, email: string) {
+    const data = JSON.stringify({ userId: userId, token: token, tokenExpirationDate: tokenExpirationDate, email: email });
+    Storage.set({ key: 'authData', value: data });
+
   }
 }
