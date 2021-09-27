@@ -2,6 +2,7 @@
 /* eslint-disable @typescript-eslint/no-unused-expressions */
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { Subscription } from 'rxjs';
+import { take } from 'rxjs/operators';
 import { AuthService } from '../../auth/auth.service';
 
 import { Place } from '../place.model';
@@ -16,7 +17,7 @@ export class DiscoverPage implements OnInit, OnDestroy {
 
   loadedPlaces: Place[];
   relevantPlaces: Place[];
-  isLoading= false;
+  isLoading = false;
   private placesSubscription: Subscription;
 
   constructor(private placesService: PlacesService, private authService: AuthService) { }
@@ -36,14 +37,16 @@ export class DiscoverPage implements OnInit, OnDestroy {
   }
 
   onSegmentsChange(event: any) {
-    if (event.detail.value === 'all-places') {
-      this.relevantPlaces = [...this.loadedPlaces];
-    } else {
+    this.authService.userId.pipe(take(1)).subscribe(userId => {
+      if (event.detail.value === 'all-places') {
+        this.relevantPlaces = [...this.loadedPlaces];
+      } else {
 
-      this.relevantPlaces = this.loadedPlaces.filter((place) => {
-        return place.userId !== this.authService.userId;
-      });
-    }
+        this.relevantPlaces = this.loadedPlaces.filter((place) => {
+          return place.userId !== userId;
+        });
+      }
+    });
   }
 
   ngOnDestroy() {

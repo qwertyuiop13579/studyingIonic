@@ -4,8 +4,9 @@ import { Component, OnInit } from '@angular/core';
 import { NgForm } from '@angular/forms';
 import { Router } from '@angular/router';
 import { AlertController, LoadingController } from '@ionic/angular';
+import { Observable } from 'rxjs';
 
-import { AuthService } from './auth.service';
+import { AuthResponseData, AuthService } from './auth.service';
 
 @Component({
   selector: 'app-auth',
@@ -24,13 +25,20 @@ export class AuthPage implements OnInit {
 
   authenticate(email: string, password: string) {
     this.isLoading = true;
-    this.authService.login();
     this.loadingCtrl.create({
       keyboardClose: true, message: 'Logging in...'
     }).then(loadingEl => {
       loadingEl.present();
-      console.log('signup');
-      this.authService.signup(email, password).subscribe((resData) => {
+      let authObs: Observable<AuthResponseData>;
+      if (this.isLoginMode) {
+        console.log('login');
+        authObs = this.authService.login(email, password);
+      }
+      else {
+        console.log('signup');
+        authObs = this.authService.signup(email, password);
+      }
+      authObs.subscribe((resData) => {
         console.log(resData);
         this.isLoading = false;
         loadingEl.dismiss();
@@ -44,6 +52,9 @@ export class AuthPage implements OnInit {
           case 'EMAIL_EXISTS': message = 'The email address is already in use by another account.'; break;
           case 'OPERATION_NOT_ALLOWED': message = 'Password sign-in is disabled for this project'; break;
           case 'OO_MANY_ATTEMPTS_TRY_LATER': message = 'We have blocked all requests from this device due to unusual activity. Try again later'; break;
+          case 'EMAIL_NOT_FOUND': message = 'There is no user record corresponding to this identifier. The user may have been deleted.'; break;
+          case 'INVALID_PASSWORD': message = 'The password is invalid or the user does not have a password.'; break;
+          case 'USER_DISABLED': message = 'The user account has been disabled by an administrator.'; break;
         }
         this.showAlert(message);
       });
@@ -56,7 +67,6 @@ export class AuthPage implements OnInit {
     }
     const email = form.value.email;
     const password = form.value.password;
-
     this.authenticate(email, password);
   }
 

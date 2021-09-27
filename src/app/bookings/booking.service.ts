@@ -35,23 +35,28 @@ export class BookingsService {
 
   constructor(private authService: AuthService, private http: HttpClient) { }
 
-  addBooking(placeId: string, placeTitle: string, placeImage: string,
-    firstName: string, lastName: string, guestsNumber: number, dateFrom: Date, dateTo: Date) {
-    const newBooking = new Booking(Math.random().toString(), placeId, this.authService.userId, placeTitle, placeImage, firstName,
-      lastName, guestsNumber, dateFrom, dateTo);
+  addBooking(placeId: string, placeTitle: string, placeImage: string, firstName: string, lastName: string, guestsNumber: number, dateFrom: Date, dateTo: Date) {
     let generatedId: string;
-    return this.http.post<{ name: string }>('https://studyingionic-83d58-default-rtdb.firebaseio.com/bookings.json', { ...newBooking, id: null })
-      .pipe(
-        switchMap((resData) => {
-          generatedId = resData.name;
-          return this.bookings;
-        }),
-        take(1),
-        tap((bookArr) => {
-          newBooking.id = generatedId;
-          this.bookingsSubj.next(bookArr.concat(newBooking));
-        })
-      );
+    let newBooking: Booking;
+    this.authService.userId.pipe(take(1), switchMap((userId) => {
+      if (!userId) {
+        throw new Error('No user id found.');
+        return;
+      }
+      else {
+        newBooking = new Booking(Math.random().toString(), placeId, userId, placeTitle, placeImage, firstName, lastName, guestsNumber, dateFrom, dateTo);
+      }
+      return this.http.post<{ name: string }>('https://studyingionic-83d58-default-rtdb.firebaseio.com/bookings.json', { ...newBooking, id: null });
+    }), switchMap((resData) => {
+      generatedId = resData.name;
+      return this.bookings;
+    }),
+      take(1),
+      tap((bookArr) => {
+        newBooking.id = generatedId;
+        this.bookingsSubj.next(bookArr.concat(newBooking));
+      })
+    );
   }
 
   cancelBooking(bookingId: string) {
