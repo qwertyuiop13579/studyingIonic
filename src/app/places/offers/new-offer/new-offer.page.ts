@@ -1,3 +1,4 @@
+/* eslint-disable max-len */
 /* eslint-disable arrow-body-style */
 /* eslint-disable prefer-arrow/prefer-arrow-functions */
 /* eslint-disable object-shorthand */
@@ -5,7 +6,6 @@ import { Component, OnInit } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { LoadingController } from '@ionic/angular';
-import { switchMap } from 'rxjs/operators';
 
 import { PlaceLocation } from '../../location.model';
 import { PlacesService } from '../../places.service';
@@ -13,7 +13,8 @@ import { PlacesService } from '../../places.service';
 function base64toBlob(base64Data, contentType) {     //convert Base64 to blob
   contentType = contentType || '';
   const sliceSize = 1024;
-  const byteCharacters = atob(base64Data);
+  //const byteCharacters = atob(base64Data);
+  const byteCharacters = URL.createObjectURL(new Blob([base64Data], { type: 'text/plain' }));  // the error was with atob() function
   const bytesLength = byteCharacters.length;
   const slicesCount = Math.ceil(bytesLength / sliceSize);
   const byteArrays = new Array(slicesCount);
@@ -30,9 +31,6 @@ function base64toBlob(base64Data, contentType) {     //convert Base64 to blob
   }
   return new Blob(byteArrays, { type: contentType });
 }
-
-
-
 
 @Component({
   selector: 'app-new-offer',
@@ -74,7 +72,7 @@ export class NewOfferPage implements OnInit {
     else {
       imageFile = imageData;
     }
-    console.log(imageFile);
+    //console.log(imageFile);      //return image
     this.form.patchValue({ image: imageFile });
   }
 
@@ -82,7 +80,7 @@ export class NewOfferPage implements OnInit {
     if (this.form.invalid || !this.form.get('image').value) {
       return;
     }
-    console.log(this.form.value);
+    //console.log(this.form.value);
     this.loadingCtrl.create({
       message: 'Creating new place...'
     }).then(loadingEl => {
@@ -92,9 +90,9 @@ export class NewOfferPage implements OnInit {
       //     new Date(this.form.value.dateFrom), new Date(this.form.value.dateTo), this.form.value.location, uploadRes.imageURL);
       //     // Error with uploadRes.imageURL
       // }))
-      this.placesService.addPlace(this.form.value.title, this.form.value.description, +this.form.value.price,
-        new Date(this.form.value.dateFrom), new Date(this.form.value.dateTo), this.form.value.location, this.form.get('image').value)
-        .subscribe(() => {
+      //this.placesService.addPlace(this.form.value.title, this.form.value.description, +this.form.value.price, new Date(this.form.value.dateFrom), new Date(this.form.value.dateTo), this.form.value.location, this.form.get('image').value)
+      this.placesService.addPlace(this.form.value.title, this.form.value.description, +this.form.value.price, new Date(this.form.value.dateFrom), new Date(this.form.value.dateTo), this.form.value.location, this.form.value.location.staticMapImageURL)
+      .subscribe(() => {
           loadingEl.dismiss();
           this.form.reset();
           this.router.navigate(['/places/tabs/offers']);

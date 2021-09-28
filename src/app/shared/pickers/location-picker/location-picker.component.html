@@ -1,7 +1,7 @@
 <div class="picker">
   <ion-spinner color="primary" *ngIf="isLoading"></ion-spinner>
   <ion-img *ngIf="selectedLocationImage && !isLoading && showPreview" role="button" (click)="onPickLocation()"
-    class="location-image" [src]="selectedLocationImage"></ion-img>
+    class="location-image" [src]="selectedLocationImage" alt="Cannot pick location image"></ion-img>
   <ion-button *ngIf="(!selectedLocationImage  || !showPreview) && !isLoading" color="primary" (click)="onPickLocation()">
     <ion-icon name="map" slot="start"></ion-icon>
     <ion-label>Select Location</ion-label>

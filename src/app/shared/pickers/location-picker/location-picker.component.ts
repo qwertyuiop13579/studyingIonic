@@ -20,7 +20,7 @@ import { Capacitor } from '@capacitor/core';
 export class LocationPickerComponent implements OnInit {
 
   @Output() locationPicked = new EventEmitter<PlaceLocation>();
-  @Input() showPreview =false;
+  @Input() showPreview = false;
   selectedLocationImage: string;
   isLoading = false;
 
@@ -132,6 +132,12 @@ export class LocationPickerComponent implements OnInit {
   }
 
   private getMapImage(lat: number, lng: number, zoom: number) {
-    return `https://maps.googleapis.com/maps/api/staticmap?center=${lat},${lng}&zoom=${zoom}&size=500x300&markers=color:red%7Clabel:Place%7C${lat},${lng}&key=${environment.googleMapsAPIKey}`;
+    if (environment.googleMapsAPIKey === 'My-key') {
+      console.log('Use Static Google Map image');
+      return 'https://i.stack.imgur.com/HILmr.png';
+    }
+    else {
+      return `https://maps.googleapis.com/maps/api/staticmap?center=${lat},${lng}&zoom=${zoom}&size=500x300&markers=color:red%7Clabel:Place%7C${lat},${lng}&key=${environment.googleMapsAPIKey}`;
+    }
   }
 }

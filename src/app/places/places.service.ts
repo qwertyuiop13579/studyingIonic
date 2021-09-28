@@ -83,9 +83,8 @@ export class PlacesService {
         throw new Error('No user id found.');
       }
       else {
-
-        //newPlace = new Place(Math.random.toString(), title, description, imageURL, price, dateFrom, dateTo, userId, location);
-        newPlace = new Place(Math.random.toString(), title, description, 'https://www.pandotrip.com/wp-content/uploads/2018/06/Eiffel-Tower-Paris-France.jpg', price, dateFrom, dateTo, userId, location);
+        newPlace = new Place(Math.random.toString(), title, description, imageURL, price, dateFrom, dateTo, userId, location);
+        //newPlace = new Place(Math.random.toString(), title, description, 'https://www.pandotrip.com/wp-content/uploads/2018/06/Eiffel-Tower-Paris-France.jpg', price, dateFrom, dateTo, userId, location);
       }
       return this.http.post<{ name: string }>('https://studyingionic-83d58-default-rtdb.firebaseio.com/places.json', { ...newPlace, id: null });
 
