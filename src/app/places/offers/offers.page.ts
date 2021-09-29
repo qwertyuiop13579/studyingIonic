@@ -1,4 +1,4 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import { ChangeDetectionStrategy, Component, OnDestroy, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { IonItemSliding } from '@ionic/angular';
 import { Subscription } from 'rxjs';
@@ -10,6 +10,7 @@ import { PlacesService } from '../places.service';
   selector: 'app-offers',
   templateUrl: './offers.page.html',
   styleUrls: ['./offers.page.scss'],
+  //changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class OffersPage implements OnInit, OnDestroy {
   offers: Place[];

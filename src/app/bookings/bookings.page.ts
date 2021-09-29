@@ -1,4 +1,5 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import { AsyncPipe } from '@angular/common';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnDestroy, OnInit } from '@angular/core';
 import { IonItemSliding, LoadingController } from '@ionic/angular';
 import { Subscription } from 'rxjs';
 import { Booking } from './booking.model';
@@ -8,17 +9,21 @@ import { BookingsService } from './booking.service';
   selector: 'app-bookings',
   templateUrl: './bookings.page.html',
   styleUrls: ['./bookings.page.scss'],
+  //changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class BookingsPage implements OnInit, OnDestroy {
   bookings: Booking[];
   isLoading = false;
   private bookingSubscription: Subscription;
 
-  constructor(private bookingsService: BookingsService, private loadingCtrl: LoadingController) { }
+  constructor(private bookingsService: BookingsService, private loadingCtrl: LoadingController, private cdref: ChangeDetectorRef) { }
 
   ngOnInit() {
     this.bookingSubscription = this.bookingsService.bookings.subscribe((bookingsArr) => {
+      console.log(bookingsArr);
       this.bookings = bookingsArr;
+      //this.cdref.markForCheck();
+
     });
   }
 
