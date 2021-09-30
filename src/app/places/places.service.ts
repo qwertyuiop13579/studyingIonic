@@ -122,4 +122,16 @@ export class PlacesService {
       tap(() => { this.placesSubj.next(updatedPlaces); }));
   }
 
+  deletePlace(placeId: string) {
+    return this.http.delete(`https://studyingionic-83d58-default-rtdb.firebaseio.com/places/${placeId}.json`).pipe(
+      switchMap(() => {
+        return this.places;
+      }),
+      take(1),
+      tap((bookingsArr) => {
+        this.placesSubj.next(bookingsArr);
+      })
+    );
+  }
+
 }

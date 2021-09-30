@@ -1,4 +1,4 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import { ChangeDetectionStrategy, Component, OnDestroy, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ActionSheetController, AlertController, LoadingController, ModalController, NavController } from '@ionic/angular';
 import { Subscription } from 'rxjs';
@@ -15,6 +15,7 @@ import { switchMap, take } from 'rxjs/operators';
   selector: 'app-place-detail',
   templateUrl: './place-detail.page.html',
   styleUrls: ['./place-detail.page.scss'],
+  //changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class PlaceDetailPage implements OnInit, OnDestroy {
   place: Place;
@@ -120,8 +121,8 @@ export class PlaceDetailPage implements OnInit, OnDestroy {
             loadindEl.present();
             const data = resultData.data.bookingData;
             this.bookingService.addBooking(this.place.id, this.place.title, this.place.imageURL,
-              data.firstName, data.lastName, data.guestsNumber, data.dateFrom,
-              data.dateTo).subscribe(() => {
+              data.firstName, data.lastName, data.guestsNumber, new Date(data.dateFrom),
+              new Date(data.dateTo)).subscribe(() => {
                 loadindEl.dismiss();
                 this.router.navigate(['/places/tabs/discover']);
               });
@@ -150,5 +151,10 @@ export class PlaceDetailPage implements OnInit, OnDestroy {
       this.placesSubscription.unsubscribe();
     }
   }
+
+  // get printMessage(){
+  //   console.log('place-detatil render');
+  //   return true;
+  // }
 
 }

@@ -9,30 +9,36 @@ import { BookingsService } from './booking.service';
   selector: 'app-bookings',
   templateUrl: './bookings.page.html',
   styleUrls: ['./bookings.page.scss'],
-  //changeDetection: ChangeDetectionStrategy.OnPush
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class BookingsPage implements OnInit, OnDestroy {
   bookings: Booking[];
   isLoading = false;
   private bookingSubscription: Subscription;
 
-  constructor(private bookingsService: BookingsService, private loadingCtrl: LoadingController, private cdref: ChangeDetectorRef) { }
+  constructor(private bookingsService: BookingsService, private loadingCtrl: LoadingController, private cdRef: ChangeDetectorRef) { }
 
   ngOnInit() {
     this.bookingSubscription = this.bookingsService.bookings.subscribe((bookingsArr) => {
       console.log(bookingsArr);
       this.bookings = bookingsArr;
-      //this.cdref.markForCheck();
+      //this.cdRef.detectChanges();
 
+      //markforCheck
+      //booking$
     });
+    // this.isLoading = true;
+    // this.bookingsService.fetchBookings().subscribe(() => {
+    //   this.isLoading = false;
+    // });
   }
 
-  ionViewWillEnter() {
-    this.isLoading = true;
-    this.bookingsService.fetchBookings().subscribe(() => {
-      this.isLoading = false;
-    });
-  }
+  // ionViewWillEnter() {
+  //   this.isLoading = true;
+  //   this.bookingsService.fetchBookings().subscribe(() => {
+  //     this.isLoading = false;
+  //   });
+  // }
 
   onCancelBooking(bookingId: string, slidingItem: IonItemSliding) {
     slidingItem.close();
@@ -40,6 +46,7 @@ export class BookingsPage implements OnInit, OnDestroy {
       loadingEl.present();
       this.bookingsService.cancelBooking(bookingId).subscribe(() => {
         loadingEl.dismiss();
+        //this.cdRef.markForCheck();
         this.isLoading = true;
         this.bookingsService.fetchBookings().subscribe(() => {
           this.isLoading = false;
@@ -47,10 +54,16 @@ export class BookingsPage implements OnInit, OnDestroy {
       });
     }));
   }
+
   ngOnDestroy() {
     if (this.bookingSubscription) {
       this.bookingSubscription.unsubscribe();
     }
+  }
+
+  get printMessage() {
+    console.log('Bookings page render');
+    return true;
   }
 
 }

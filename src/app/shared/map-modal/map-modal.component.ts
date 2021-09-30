@@ -1,5 +1,6 @@
+/* eslint-disable max-len */
 /* eslint-disable object-shorthand */
-import { Component, OnInit, AfterViewInit, ViewChild, ElementRef, Renderer2, OnDestroy, Input } from '@angular/core';
+import { Component, OnInit, AfterViewInit, ViewChild, ElementRef, Renderer2, OnDestroy, Input, ChangeDetectionStrategy } from '@angular/core';
 import { ModalController } from '@ionic/angular';
 import { Coordinates } from 'src/app/places/location.model';
 import { environment } from '../../../environments/environment';
@@ -8,6 +9,7 @@ import { environment } from '../../../environments/environment';
   selector: 'app-map-modal',
   templateUrl: './map-modal.component.html',
   styleUrls: ['./map-modal.component.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class MapModalComponent implements OnInit, AfterViewInit, OnDestroy {
 

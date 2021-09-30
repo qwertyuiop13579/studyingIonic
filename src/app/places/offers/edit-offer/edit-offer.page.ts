@@ -1,4 +1,4 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnDestroy, OnInit } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { AlertController, LoadingController, NavController } from '@ionic/angular';
@@ -11,6 +11,7 @@ import { PlacesService } from '../../places.service';
   selector: 'app-edit-offer',
   templateUrl: './edit-offer.page.html',
   styleUrls: ['./edit-offer.page.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class EditOfferPage implements OnInit, OnDestroy {
   place: Place;
@@ -20,7 +21,8 @@ export class EditOfferPage implements OnInit, OnDestroy {
   private placesSubscription: Subscription;
 
   constructor(private route: ActivatedRoute, private placesService: PlacesService, private navCtrl: NavController,
-    private router: Router, private loadingCtrl: LoadingController, private alertCtrl: AlertController) { }
+    private router: Router, private loadingCtrl: LoadingController, private alertCtrl: AlertController,
+    private cdRef: ChangeDetectorRef) { }
 
   ngOnInit() {
     this.route.paramMap.subscribe(paramMap => {
@@ -32,7 +34,7 @@ export class EditOfferPage implements OnInit, OnDestroy {
       this.isLoading = true;
       this.placesSubscription = this.placesService.getPlace(this.placeId).subscribe((place) => {
         this.place = place;
-
+        this.cdRef.markForCheck();
         this.form = new FormGroup({
           title: new FormControl(this.place.title, { validators: [Validators.required] }),
           description: new FormControl(this.place.description, { validators: [Validators.required, Validators.maxLength(180)] }),
@@ -74,5 +76,4 @@ export class EditOfferPage implements OnInit, OnDestroy {
       this.placesSubscription.unsubscribe();
     }
   }
-
 }

@@ -1,7 +1,7 @@
 /* eslint-disable object-shorthand */
 /* eslint-disable max-len */
 import { HttpClient } from '@angular/common/http';
-import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
+import { ChangeDetectionStrategy, Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { ActionSheetController, AlertController, ModalController } from '@ionic/angular';
 import { MapModalComponent } from '../../map-modal/map-modal.component';
 import { environment } from '../../../../environments/environment';
@@ -16,6 +16,7 @@ import { Capacitor } from '@capacitor/core';
   selector: 'app-location-picker',
   templateUrl: './location-picker.component.html',
   styleUrls: ['./location-picker.component.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class LocationPickerComponent implements OnInit {
 

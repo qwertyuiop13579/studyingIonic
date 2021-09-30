@@ -1,14 +1,13 @@
-import { Component, ElementRef, EventEmitter, Input, OnInit, Output, ViewChild } from '@angular/core';
+import { ChangeDetectionStrategy, Component, ElementRef, EventEmitter, Input, OnInit, Output, ViewChild } from '@angular/core';
 import { Camera, CameraResultType, CameraSource } from '@capacitor/camera';
 import { Capacitor } from '@capacitor/core';
 import { Platform } from '@ionic/angular';
-import { Filesystem, Directory } from '@capacitor/filesystem';
-import { Storage } from '@capacitor/storage';
 
 @Component({
   selector: 'app-image-picker',
   templateUrl: './image-picker.component.html',
   styleUrls: ['./image-picker.component.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class ImagePickerComponent implements OnInit {
   @ViewChild('filepicker') filePickerRef: ElementRef<HTMLInputElement>;
@@ -37,7 +36,7 @@ export class ImagePickerComponent implements OnInit {
     }
     Camera.getPhoto({
       quality: 50,
-      source: CameraSource.Camera,
+      source: CameraSource.Prompt,
       correctOrientation: true,
       height: 320,
       width: 200,
