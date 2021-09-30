@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, OnDestroy, OnInit } from '@angular/core';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnDestroy, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ActionSheetController, AlertController, LoadingController, ModalController, NavController } from '@ionic/angular';
 import { Subscription } from 'rxjs';
@@ -15,7 +15,7 @@ import { switchMap, take } from 'rxjs/operators';
   selector: 'app-place-detail',
   templateUrl: './place-detail.page.html',
   styleUrls: ['./place-detail.page.scss'],
-  //changeDetection: ChangeDetectionStrategy.OnPush
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class PlaceDetailPage implements OnInit, OnDestroy {
   place: Place;
@@ -33,6 +33,7 @@ export class PlaceDetailPage implements OnInit, OnDestroy {
     private loadingCtrl: LoadingController,
     private authService: AuthService,
     private alertCtrl: AlertController,
+    private cdRef: ChangeDetectorRef,
   ) { }
 
   ngOnInit() {
@@ -54,6 +55,7 @@ export class PlaceDetailPage implements OnInit, OnDestroy {
           }
         })).subscribe((place) => {
           this.place = place;
+          this.cdRef.markForCheck();
           this.isBookable = place.userId !== currentUserId;
           this.isLoading = false;
         }, (error) => {

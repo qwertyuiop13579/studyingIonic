@@ -20,25 +20,17 @@ export class BookingsPage implements OnInit, OnDestroy {
 
   ngOnInit() {
     this.bookingSubscription = this.bookingsService.bookings.subscribe((bookingsArr) => {
-      console.log(bookingsArr);
       this.bookings = bookingsArr;
+      this.cdRef.markForCheck();
       //this.cdRef.detectChanges();
-
       //markforCheck
       //booking$
     });
-    // this.isLoading = true;
-    // this.bookingsService.fetchBookings().subscribe(() => {
-    //   this.isLoading = false;
-    // });
+    this.isLoading = true;
+    this.bookingsService.fetchBookings().subscribe(() => {
+      this.isLoading = false;
+    });
   }
-
-  // ionViewWillEnter() {
-  //   this.isLoading = true;
-  //   this.bookingsService.fetchBookings().subscribe(() => {
-  //     this.isLoading = false;
-  //   });
-  // }
 
   onCancelBooking(bookingId: string, slidingItem: IonItemSliding) {
     slidingItem.close();
@@ -46,11 +38,6 @@ export class BookingsPage implements OnInit, OnDestroy {
       loadingEl.present();
       this.bookingsService.cancelBooking(bookingId).subscribe(() => {
         loadingEl.dismiss();
-        //this.cdRef.markForCheck();
-        this.isLoading = true;
-        this.bookingsService.fetchBookings().subscribe(() => {
-          this.isLoading = false;
-        });
       });
     }));
   }
@@ -61,9 +48,9 @@ export class BookingsPage implements OnInit, OnDestroy {
     }
   }
 
-  get printMessage() {
-    console.log('Bookings page render');
-    return true;
-  }
+  // get printMessage() {
+  //   console.log('Bookings page render');
+  //   return true;
+  // }
 
 }

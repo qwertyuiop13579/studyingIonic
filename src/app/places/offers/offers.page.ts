@@ -28,7 +28,7 @@ export class OffersPage implements OnInit, OnDestroy {
     this.placesSubscription = this.placesService.places.subscribe((placesArr) => {
       this.offers = placesArr;          //when array changes, angular do not know about this, so we need to use markForCheck();
       //this.cdRef.detectChanges();
-      console.log(this.offers);
+      //console.log(this.offers);
       this.cdRef.markForCheck();
     });
     this.isLoading = true;
@@ -46,13 +46,8 @@ export class OffersPage implements OnInit, OnDestroy {
     slidingItem.close();
     this.loadingCtrl.create({ message: 'Deleting offer...' }).then((loadingEl => {
       loadingEl.present();
-      this.placesService.deletePlace(offerId).subscribe(() => {
+      this.placesService.deletePlace(offerId).subscribe((placesArr) => {
         loadingEl.dismiss();
-        console.log('Delete offer');
-        this.isLoading = true;
-        this.placesService.fetchPlaces().subscribe(() => {
-          this.isLoading = false;
-        });
       });
     }));
   }

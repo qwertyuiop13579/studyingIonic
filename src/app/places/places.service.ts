@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/dot-notation */
+/* eslint-disable guard-for-in */
 /* eslint-disable arrow-body-style */
 /* eslint-disable max-len */
 /* eslint-disable no-underscore-dangle */
@@ -128,8 +130,8 @@ export class PlacesService {
         return this.places;
       }),
       take(1),
-      tap((bookingsArr) => {
-        this.placesSubj.next(bookingsArr);
+      tap((placesArr) => {
+        this.placesSubj.next(placesArr.filter(place => place.id !== placeId));
       })
     );
   }
