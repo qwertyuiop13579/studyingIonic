@@ -1,7 +1,8 @@
+/* eslint-disable object-shorthand */
 import { ChangeDetectionStrategy, Component, ElementRef, EventEmitter, Input, OnInit, Output, ViewChild } from '@angular/core';
 import { Camera, CameraResultType, CameraSource } from '@capacitor/camera';
 import { Capacitor } from '@capacitor/core';
-import { Platform } from '@ionic/angular';
+import { ActionSheetController, Platform } from '@ionic/angular';
 
 @Component({
   selector: 'app-image-picker',
@@ -16,7 +17,7 @@ export class ImagePickerComponent implements OnInit {
   @Input() selectedImage: string;
   canUsePicker = false;
 
-  constructor(private platform: Platform) { }
+  constructor(private platform: Platform, private actionSheetCtrl: ActionSheetController,) { }
 
   ngOnInit() {
     // console.log('Mobile: ' + this.platform.is('mobile'));
@@ -30,26 +31,54 @@ export class ImagePickerComponent implements OnInit {
   }
 
   async onPickImage() {
-    if (!Capacitor.isPluginAvailable('Camera')) {
-      this.filePickerRef.nativeElement.click();
-      return;
-    }
-    Camera.getPhoto({
-      quality: 50,
-      source: CameraSource.Prompt,
-      correctOrientation: true,
-      height: 320,
-      width: 200,
-      resultType: CameraResultType.DataUrl
-    }).then(image => {
-      this.selectedImage = image.dataUrl;
-      this.imagePick.emit(image.dataUrl);           //error
-    }).catch((error) => {
-      if (this.canUsePicker) {
-        this.filePickerRef.nativeElement.click();          //open filePicker if cancel camera
+    let source = CameraSource.Photos;
+    this.actionSheetCtrl.create({
+      header: 'Choose option to locate', buttons: [
+        {
+          text: 'From Photos',
+          handler: () => {
+            source = CameraSource.Photos;
+          }
+        },
+        {
+          text: 'Take picture',
+          handler: () => {
+            source = CameraSource.Camera;
+          }
+        },
+        {
+          text: 'Cancel',
+          role: 'destructive',
+        },
+      ]
+    }).then((actionEl) => {
+      actionEl.present();
+      return actionEl.onDidDismiss();
+    }).then((result) => {
+      if (result.role === 'destructive') {
+        return;
       }
-      console.log(error);
-      return false;
+      if (!Capacitor.isPluginAvailable('Camera')) {
+        this.filePickerRef.nativeElement.click();
+        return;
+      }
+      Camera.getPhoto({
+        quality: 50,
+        source: source,
+        correctOrientation: true,
+        height: 320,
+        width: 200,
+        resultType: CameraResultType.DataUrl
+      }).then(image => {
+        this.selectedImage = image.dataUrl;
+        this.imagePick.emit(image.dataUrl);           //error
+      }).catch((error) => {
+        if (this.canUsePicker) {
+          this.filePickerRef.nativeElement.click();          //open filePicker if cancel camera
+        }
+        console.log(error);
+        return false;
+      });
     });
   }
 

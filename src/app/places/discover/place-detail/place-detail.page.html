@@ -18,18 +18,22 @@
       </ion-col>
     </ion-row>
     <ion-row>
-      <ion-col size-sm="6" offset-sm="3" class="ion-text-center ion-padding">
+      <ion-col size-sm="6" offset-sm="3" class="ion-padding">
         <p>{{ place.description }}</p>
+        <p>Price: {{ place.price }}$/night</p>
+        <p>Available from: {{ place.availableFrom.toLocaleDateString("en-US") }}</p>
+        <p>Available to: {{ place.availableTo.toLocaleDateString("en-US") }}</p>
       </ion-col>
     </ion-row>
-    <ion-row *ngIf="place.location">
+    <ion-row *ngIf="place.location && place.location.address">
       <ion-col size-sm="6" offset-sm="3" class="ion-text-center">
         <p>{{ place.location.address }}</p>
       </ion-col>
     </ion-row>
     <ion-row *ngIf="place.location">
       <ion-col size-sm="6" offset-sm="3" class="ion-text-center">
-        <ion-img role="button" (click)="onShowFullMap()" class="location-image" [src]="place.location.staticMapImageURL"></ion-img>
+        <ion-img role="button" (click)="onShowFullMap()" class="location-image"
+          [src]="place.location.staticMapImageURL"></ion-img>
       </ion-col>
     </ion-row>
     <ion-row *ngIf="isBookable">
