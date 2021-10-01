@@ -22,7 +22,7 @@ export class LocationPickerComponent implements OnInit {
 
   @Output() locationPicked = new EventEmitter<PlaceLocation>();
   @Input() showPreview = false;
-  selectedLocationImage: string;
+  @Input() selectedLocationImage: string;
   isLoading = false;
 
 

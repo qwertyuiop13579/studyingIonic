@@ -10,7 +10,7 @@ import { LoadingController } from '@ionic/angular';
 import { PlaceLocation } from '../../location.model';
 import { PlacesService } from '../../places.service';
 
-function base64toBlob(base64Data, contentType) {     //convert Base64 to blob
+export function base64toBlob(base64Data, contentType) {     //convert Base64 to blob
   contentType = contentType || '';
   const sliceSize = 1024;
   //const byteCharacters = atob(base64Data);

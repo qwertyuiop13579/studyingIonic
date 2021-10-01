@@ -102,7 +102,8 @@ export class PlacesService {
     );
   }
 
-  updatePlace(placeId: string, title: string, description: string) {
+  updatePlace(placeId: string, title: string, description: string, price: number, dateFrom: Date, dateTo: Date,
+    location: PlaceLocation, imageURL: string) {
     let updatedPlaces: Place[];
     return this.places.pipe(
       take(1),
@@ -118,7 +119,7 @@ export class PlacesService {
         const updatedPlaceIndex = placesArr.findIndex(pl => pl.id === placeId);
         updatedPlaces = [...placesArr];
         const oldPlace = updatedPlaces[updatedPlaceIndex];
-        updatedPlaces[updatedPlaceIndex] = new Place(oldPlace.id, title, description, oldPlace.imageURL, oldPlace.price, oldPlace.availableFrom, oldPlace.availableTo, oldPlace.userId, oldPlace.location);
+        updatedPlaces[updatedPlaceIndex] = new Place(oldPlace.id, title, description, imageURL, price, dateFrom, dateTo, oldPlace.userId, location);
         return this.http.put(`https://studyingionic-83d58-default-rtdb.firebaseio.com/places/${placeId}.json`, { ...updatedPlaces[updatedPlaceIndex], id: null });
       }),
       tap(() => { this.placesSubj.next(updatedPlaces); }));
