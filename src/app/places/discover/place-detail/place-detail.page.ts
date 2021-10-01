@@ -122,8 +122,8 @@ export class PlaceDetailPage implements OnInit, OnDestroy {
           this.loadingCtrl.create({ message: 'Booking place...' }).then(loadindEl => {
             loadindEl.present();
             const data = resultData.data.bookingData;
-            this.bookingService.addBooking(this.place.id, this.place.title, this.place.imageURL,
-              data.firstName, data.lastName, data.guestsNumber, new Date(data.dateFrom),
+            this.bookingService.addBooking(this.place.id, this.place.title, this.place.description, data.firstName,
+              data.lastName, data.guestsNumber, this.place.imageURL, this.place.location.staticMapImageURL, new Date(data.dateFrom),
               new Date(data.dateTo)).subscribe(() => {
                 loadindEl.dismiss();
                 this.router.navigate(['/places/tabs/discover']);

@@ -11,15 +11,17 @@ import { AuthService } from '../auth/auth.service';
 import { Booking } from './booking.model';
 
 interface BookingData {
+  placeTitle: string;
+  placeDescription: string;
+  firstName: string;
+  lastName: string;
+  guestNumber: number;
   dateFrom: string;
   dateTo: string;
-  placeId: string;
-  placeImage: string;
-  placeTitle: string;
-  firstName: string;
-  guestNumber: number;
-  lastName: string;
+  placeImageURL: string;
+  locationImageURL: string;
   userId: string;
+  placeId: string;
 }
 
 
@@ -35,7 +37,7 @@ export class BookingsService {
 
   constructor(private authService: AuthService, private http: HttpClient) { }
 
-  addBooking(placeId: string, placeTitle: string, placeImage: string, firstName: string, lastName: string, guestsNumber: number, dateFrom: Date, dateTo: Date) {
+  addBooking(placeId: string, placeTitle: string, placeDescription: string, firstName: string, lastName: string, guestsNumber: number, placeImageURL: string, locationImageURL: string, dateFrom: Date, dateTo: Date) {
     let generatedId: string;
     let newBooking: Booking;
     return this.authService.userId.pipe(take(1), switchMap((userId) => {
@@ -43,7 +45,7 @@ export class BookingsService {
         throw new Error('No user id found.');
       }
       else {
-        newBooking = new Booking(Math.random().toString(), placeId, userId, placeTitle, placeImage, firstName, lastName, guestsNumber, dateFrom, dateTo);
+        newBooking = new Booking(Math.random().toString(), placeId, userId, placeTitle, placeDescription, firstName, lastName, guestsNumber, placeImageURL, locationImageURL, dateFrom, dateTo);
       }
       return this.http.post<{ name: string }>('https://studyingionic-83d58-default-rtdb.firebaseio.com/bookings.json', { ...newBooking, id: null });
     }), switchMap((resData) => {
@@ -82,8 +84,10 @@ export class BookingsService {
         for (const key in resData) {
           if (resData.hasOwnProperty(key)) {
             const resDataByKey = resData[key];
-            bookings.push(new Booking(key, resDataByKey.placeId, resDataByKey.userId, resDataByKey.placeTitle, resDataByKey.placeImage,
-              resDataByKey.firstName, resDataByKey.lastName, resDataByKey.guestNumber, new Date(resDataByKey.dateFrom), new Date(resDataByKey.dateTo)));
+            bookings.push(new Booking(key, resDataByKey.placeId, resDataByKey.userId, resDataByKey.placeTitle,
+              resDataByKey.placeDescription, resDataByKey.firstName, resDataByKey.lastName, resDataByKey.guestNumber,
+              resDataByKey.placeImageURL, resDataByKey.locationImageURL, new Date(resDataByKey.dateFrom),
+              new Date(resDataByKey.dateTo)));
           }
         }
         return bookings;
@@ -91,5 +95,14 @@ export class BookingsService {
       tap(bookArr => {
         this.bookingsSubj.next(bookArr);
       }));
+  }
+
+  getBooking(id: string) {
+    return this.http.get<BookingData>(`https://studyingionic-83d58-default-rtdb.firebaseio.com/bookings/${id}.json`).pipe(
+      map((resData) => {
+        return new Booking(id, resData.placeId, resData.userId, resData.placeTitle, resData.placeDescription, resData.firstName,
+          resData.lastName, resData.guestNumber, resData.placeImageURL, resData.locationImageURL, new Date(resData.dateFrom), new Date(resData.dateTo));
+      })
+    );
   }
 }

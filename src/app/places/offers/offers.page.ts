@@ -1,7 +1,7 @@
-import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnDestroy, OnInit } from '@angular/core';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, Input, OnDestroy, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { IonItemSliding, LoadingController } from '@ionic/angular';
-import { Subscription } from 'rxjs';
+import { Observable, Subscription } from 'rxjs';
 
 import { Place } from '../place.model';
 import { PlacesService } from '../places.service';
@@ -13,6 +13,7 @@ import { PlacesService } from '../places.service';
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class OffersPage implements OnInit, OnDestroy {
+  @Input() items: Observable<Place[]>;
   offers: Place[];
   isLoading = false;
   private placesSubscription: Subscription;
@@ -27,7 +28,6 @@ export class OffersPage implements OnInit, OnDestroy {
   ngOnInit() {
     this.placesSubscription = this.placesService.places.subscribe((placesArr) => {
       this.offers = placesArr;          //when array changes, angular do not know about this, so we need to use markForCheck();
-      //this.cdRef.detectChanges();
       //console.log(this.offers);
       this.cdRef.markForCheck();
     });

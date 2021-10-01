@@ -85,13 +85,17 @@ export class NewOfferPage implements OnInit {
       message: 'Creating new place...'
     }).then(loadingEl => {
       loadingEl.present();
+      //need to upload image to get imageURL
       // this.placesService.uploadImage(this.form.get('image').value).pipe(switchMap((uploadRes) => {
       //   return this.placesService.addPlace(this.form.value.title, this.form.value.description, +this.form.value.price,
       //     new Date(this.form.value.dateFrom), new Date(this.form.value.dateTo), this.form.value.location, uploadRes.imageURL);
       //     // Error with uploadRes.imageURL
       // }))
       //this.placesService.addPlace(this.form.value.title, this.form.value.description, +this.form.value.price, new Date(this.form.value.dateFrom), new Date(this.form.value.dateTo), this.form.value.location, this.form.get('image').value)
-      this.placesService.addPlace(this.form.value.title, this.form.value.description, +this.form.value.price, new Date(this.form.value.dateFrom), new Date(this.form.value.dateTo), this.form.value.location, this.form.value.location.staticMapImageURL)
+      this.placesService.addPlace(this.form.value.title, this.form.value.description, +this.form.value.price,
+         new Date(this.form.value.dateFrom), new Date(this.form.value.dateTo), this.form.value.location,
+          //this.form.value.location.staticMapImageURL)
+          'https://images.unsplash.com/photo-1472214103451-9374bd1c798e?ixid=MnwxMjA3fDB8MHxzZWFyY2h8MXx8cGxhY2V8ZW58MHx8MHx8&ixlib=rb-1.2.1&w=1000&q=80')
       .subscribe(() => {
           loadingEl.dismiss();
           this.form.reset();

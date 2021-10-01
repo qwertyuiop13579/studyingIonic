@@ -1,5 +1,6 @@
 import { AsyncPipe } from '@angular/common';
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnDestroy, OnInit } from '@angular/core';
+import { Router } from '@angular/router';
 import { IonItemSliding, LoadingController } from '@ionic/angular';
 import { Subscription } from 'rxjs';
 import { Booking } from './booking.model';
@@ -16,7 +17,10 @@ export class BookingsPage implements OnInit, OnDestroy {
   isLoading = false;
   private bookingSubscription: Subscription;
 
-  constructor(private bookingsService: BookingsService, private loadingCtrl: LoadingController, private cdRef: ChangeDetectorRef) { }
+  constructor(private bookingsService: BookingsService,
+    private loadingCtrl: LoadingController,
+    private cdRef: ChangeDetectorRef,
+    private router: Router) { }
 
   ngOnInit() {
     this.bookingSubscription = this.bookingsService.bookings.subscribe((bookingsArr) => {
@@ -41,6 +45,12 @@ export class BookingsPage implements OnInit, OnDestroy {
       });
     }));
   }
+
+  onOpenBooking(booking: Booking, slidingItem: IonItemSliding) {
+    slidingItem.close();
+    this.router.navigate(['/', 'bookings', booking.id]);
+  }
+
 
   ngOnDestroy() {
     if (this.bookingSubscription) {

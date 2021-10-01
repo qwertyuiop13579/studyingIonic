@@ -7,11 +7,16 @@ const routes: Routes = [
   {
     path: '',
     component: BookingsPage
+  },
+  {
+    path: ':bookingId',
+    loadChildren: () => import('./booking-detail/booking-detail.module').then( m => m.BookingDetailPageModule)
   }
+
 ];
 
 @NgModule({
   imports: [RouterModule.forChild(routes)],
   exports: [RouterModule],
 })
-export class BookingsPageRoutingModule {}
+export class BookingsPageRoutingModule { }
